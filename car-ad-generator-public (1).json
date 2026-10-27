@@ -1,0 +1,182 @@
+{
+  "name": "Nissan Pathfinder AI Ad Generator (Portfolio Copy)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ea8ef44b-9b41-458e-88bc-7d52e06f5e72",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4e9607cf-048b-4ed5-8338-f1e523410233",
+              "name": "Make",
+              "value": "Nissan",
+              "type": "string"
+            },
+            {
+              "id": "0a871258-bcef-4d32-bea1-4dc66bd4ee04",
+              "name": "Model",
+              "value": "Pathfinder",
+              "type": "string"
+            },
+            {
+              "id": "93a11e1d-ced2-420f-81b4-06d51d7f5d15",
+              "name": "Year",
+              "value": "2018",
+              "type": "string"
+            },
+            {
+              "id": "6aeb4d7d-95ae-44e2-94dc-021eed5bde62",
+              "name": "Mileage",
+              "value": "68000 km",
+              "type": "string"
+            },
+            {
+              "id": "e258ae0e-a43d-4cbb-b9ae-5bfe44e1b875",
+              "name": "Price",
+              "value": "42000 AED",
+              "type": "string"
+            },
+            {
+              "id": "f7d1f774-7e7c-407e-875a-d00bb75df2f9",
+              "name": "Transmission",
+              "value": "CVT",
+              "type": "string"
+            },
+            {
+              "id": "fb2a8307-1df0-4106-9d7a-14ea6f1380f5",
+              "name": "Colour",
+              "value": "Pearl White",
+              "type": "string"
+            },
+            {
+              "id": "34689f9e-e434-47eb-a417-83b4ec65d710",
+              "name": "Location",
+              "value": "Abu Dhabi",
+              "type": "string"
+            },
+            {
+              "id": "2e260f98-497d-48e3-b7bf-2a0bebd98a51",
+              "name": "Description",
+              "value": "2018 Nissan Pathfinder 50th Anniversary Edition in stunning White, with only 68,000 km. Maintained in excellent condition, combining comfort, luxury, and practicality. A clean, well-kept SUV that’s ready to drive.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "760e5d7f-cd44-4950-9a60-1521430104ed",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a professional luxury automotive sales copywriter creating Facebook advertisements for a premium car dealership.\n\nCreate ONE polished, engaging Facebook advertisement for the vehicle using ONLY the information provided below.\n\nVEHICLE INFORMATION:\nMake:{{ $json.Make }}\nModel:{{ $json.Model }}\nYear:{{ $json.Year }}\nMileage:{{ $json.Mileage }}\nPrice:{{ $json.Price }}\nTransmission:{{ $json.Transmission }}\nColor:{{ $json.Colour }}\nLocation:{{ $json.Location }}\nDescription:{{ $json.Description }}\n\nINSTRUCTIONS:\nStart with a powerful attention-grabbing headline containing the vehicle's year, make, and model.\nWrite in a premium, confident, professional automotive-sales style.\nHighlight the strongest selling points available in the provided information.\nMake the advertisement persuasive without making false or exaggerated claims.\nKeep it concise and suitable for Facebook.\nUse short paragraphs and clean formatting.\nUse a small number of relevant emojis.\nInclude the price and location exactly as provided.\nEnd with a clear call to action encouraging interested buyers to get in touch.\nInclude 3–5 relevant hashtags.\nMake the writing sound natural and human, not robotic.\nEvery time the workflow runs, use a different marketing angle while remaining completely truthful to the provided information.\n\nOUTPUT FORMAT:\n\n🚗 [HEADLINE]\n\n[Short, compelling introduction]\n\n✨ Highlights:\n• [Key vehicle detail]\n• [Key vehicle detail]\n• [Key vehicle detail]\n• [Key vehicle detail]\n\n💰 Price: [exact price]\n📍 Location: [exact location]\n\n[Persuasive closing + clear call to action]\n\n#Hashtag #Hashtag #Hashtag"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "2887938e-8e01-4da8-96b1-f9da2182bcee",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "ec38af64-6d7f-4b28-a7f1-f64766cb1da8",
+      "name": "Send a text message"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "nodeGroups": [],
+  "tags": []
+}
